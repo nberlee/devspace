@@ -612,7 +612,7 @@ func (r *Request) tryThrottleWithInfo(ctx context.Context, retryInfo string) err
 	now := time.Now()
 
 	err := r.rateLimiter.Wait(ctx)
-	if err != nil {
+	if err != nil && err != context.Canceled {
 		err = fmt.Errorf("client rate limiter Wait returned an error: %w", err)
 	}
 	latency := time.Since(now)
@@ -808,7 +808,7 @@ func updateRequestRetryMetric(ctx context.Context, req *Request, resp *http.Resp
 	metrics.RequestRetry.IncrementRetry(ctx, code, req.verb, host)
 }
 
-func sanitize(req *Request, resp *http.Response, err error) (string, string) {
+func sanitize(req *Request, resp *http.Response, _ error) (string, string) {
 	host := "none"
 	if req.c.base != nil {
 		host = req.c.base.Host

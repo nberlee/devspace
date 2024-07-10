@@ -4,11 +4,12 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
-	"github.com/loft-sh/devspace/pkg/devspace/kill"
 	"io"
 	"net/http"
 	"os"
 	syncpkg "sync"
+
+	"github.com/loft-sh/devspace/pkg/devspace/kill"
 
 	"github.com/loft-sh/devspace/pkg/devspace/deploy"
 	"github.com/mgutz/ansi"
@@ -146,9 +147,9 @@ func (d *devPod) startWithRetry(ctx devspacecontext.Context, devPodConfig *lates
 		// check if we need to restart
 		if selectedPod != nil {
 			shouldRestart := false
-			err := wait.PollImmediateUntil(time.Second, func() (bool, error) {
-				pod, err := ctx.KubeClient().KubeClient().CoreV1().Pods(selectedPod.Pod.Namespace).Get(ctx.Context(), selectedPod.Pod.Name, metav1.GetOptions{})
-				if err != nil {
+			err := wait.PollUntilContextCancel(context.TODO(), time.Second, true, func(ctxPullUntil context.Context) (bool, error) {
+				pod, err := ctx.KubeClient().KubeClient().CoreV1().Pods(selectedPod.Pod.Namespace).Get(ctxPullUntil, selectedPod.Pod.Name, metav1.GetOptions{})
+				if err != nil && err != context.Canceled {
 					if kerrors.IsNotFound(err) {
 						ctx.Log().Debugf("Restart dev %s because pod isn't found anymore", devPodConfig.Name)
 						shouldRestart = true
@@ -165,9 +166,9 @@ func (d *devPod) startWithRetry(ctx devspacecontext.Context, devPodConfig *lates
 				}
 
 				return true, nil
-			}, ctx.Context().Done())
+			})
 			if err != nil {
-				if err != wait.ErrWaitTimeout {
+				if wait.Interrupted(err) {
 					ctx.Log().Errorf("error restarting dev: %v", err)
 				}
 			} else if shouldRestart {

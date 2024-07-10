@@ -171,7 +171,6 @@ func CopyImageToRemote(ctx context.Context, client dockerclient.Client, imageNam
 		}
 
 		jm := &jsonmessage.JSONMessage{
-			ID:     localRef.Identifier(),
 			Status: status,
 			Progress: &jsonmessage.JSONProgress{
 				Current: update.Complete,

@@ -5,8 +5,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/loft-sh/devspace/pkg/util/tomb"
-	"github.com/mgutz/ansi"
 	"io"
 	"os"
 	"path"
@@ -14,6 +12,9 @@ import (
 	"runtime"
 	"strings"
 	"time"
+
+	"github.com/loft-sh/devspace/pkg/util/tomb"
+	"github.com/mgutz/ansi"
 
 	"github.com/loft-sh/devspace/pkg/devspace/kubectl/selector"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
@@ -159,7 +160,7 @@ func (c *controller) startWithWait(ctx devspacecontext.Context, options *Options
 				pluginErr := hook.ExecuteHooks(ctx, map[string]interface{}{
 					"sync_config": options.SyncConfig,
 				}, hook.EventsForSingle("stop:sync", options.Name).With("sync.stop")...)
-				if pluginErr != nil {
+				if pluginErr != nil && pluginErr != context.Canceled {
 					return pluginErr
 				}
 				return nil

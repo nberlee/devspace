@@ -1,6 +1,7 @@
 package kaniko
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"strings"
@@ -169,7 +170,7 @@ func (b *Builder) BuildImage(ctx devspacecontext.Context, contextPath, dockerfil
 		}
 
 		ctx.Log().Info("Waiting for build init container to start...")
-		err = wait.PollImmediate(time.Second, waitTimeout, func() (done bool, err error) {
+		err = wait.PollUntilContextTimeout(ctx.Context(), time.Second, waitTimeout, true, func(_ context.Context) (done bool, err error) {
 			buildPod, err = ctx.KubeClient().KubeClient().CoreV1().Pods(b.BuildNamespace).Get(ctx.Context(), buildPodCreated.Name, metav1.GetOptions{})
 			if err != nil {
 				if kerrors.IsNotFound(err) {
@@ -310,7 +311,7 @@ func (b *Builder) BuildImage(ctx devspacecontext.Context, contextPath, dockerfil
 
 		ctx.Log().Done("Uploaded files to container")
 		ctx.Log().Info("Waiting for kaniko container to start...")
-		err = wait.PollImmediate(time.Second, waitTimeout, func() (done bool, err error) {
+		err = wait.PollUntilContextTimeout(ctx.Context(), time.Second, waitTimeout, true, func(_ context.Context) (done bool, err error) {
 			buildPod, err = ctx.KubeClient().KubeClient().CoreV1().Pods(b.BuildNamespace).Get(ctx.Context(), buildPodCreated.Name, metav1.GetOptions{})
 			if err != nil {
 				if kerrors.IsNotFound(err) {

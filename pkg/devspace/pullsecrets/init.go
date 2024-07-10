@@ -1,6 +1,7 @@
 package pullsecrets
 
 import (
+	"context"
 	"time"
 
 	devspacecontext "github.com/loft-sh/devspace/pkg/devspace/context"
@@ -120,7 +121,7 @@ func (r *client) addPullSecretsToServiceAccount(ctx devspacecontext.Context, nam
 		serviceAccount = "default"
 	}
 
-	err := wait.PollImmediate(time.Second, time.Second*30, func() (bool, error) {
+	err := wait.PollUntilContextTimeout(ctx.Context(), time.Second, time.Second*30, true, func(_ context.Context) (bool, error) {
 		// Get default service account
 		sa, err := ctx.KubeClient().KubeClient().CoreV1().ServiceAccounts(namespace).Get(ctx.Context(), serviceAccount, metav1.GetOptions{})
 		if err != nil {

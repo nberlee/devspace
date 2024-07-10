@@ -492,7 +492,7 @@ dep2dep2wait
 
 		// wait until a pod has started
 		var pods *corev1.PodList
-		err = wait.Poll(time.Second, time.Minute, func() (done bool, err error) {
+		err = wait.PollUntilContextTimeout(context.TODO(), time.Second, time.Minute, false, func(_ context.Context) (done bool, err error) {
 			pods, err = kubeClient.RawClient().CoreV1().Pods(ns).List(context.TODO(), metav1.ListOptions{LabelSelector: selector.ReplacedLabel})
 			if err != nil {
 				return false, err
@@ -515,7 +515,7 @@ dep2dep2wait
 		framework.ExpectNoError(err)
 
 		// wait until all pods are killed
-		err = wait.Poll(time.Second, time.Minute, func() (done bool, err error) {
+		err = wait.PollUntilContextTimeout(context.TODO(), time.Second, time.Minute, false, func(_ context.Context) (done bool, err error) {
 			pods, err = kubeClient.RawClient().CoreV1().Pods(ns).List(context.TODO(), metav1.ListOptions{LabelSelector: selector.ReplacedLabel})
 			if err != nil {
 				return false, err

@@ -2,10 +2,11 @@ package replacepods
 
 import (
 	"context"
-	"github.com/onsi/ginkgo/v2"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/onsi/ginkgo/v2"
 
 	"github.com/loft-sh/devspace/cmd"
 	"github.com/loft-sh/devspace/cmd/flags"
@@ -115,7 +116,7 @@ var _ = DevSpaceDescribe("replacepods", func() {
 
 		// wait until a pod has started
 		var pods *corev1.PodList
-		err = wait.Poll(time.Second, time.Minute*3, func() (done bool, err error) {
+		err = wait.PollUntilContextTimeout(context.TODO(), time.Second, time.Minute*3, false, func(_ context.Context) (done bool, err error) {
 			pods, err = kubeClient.RawClient().CoreV1().Pods(ns).List(context.TODO(), metav1.ListOptions{LabelSelector: selector.ReplacedLabel})
 			if err != nil {
 				return false, err
@@ -156,7 +157,7 @@ var _ = DevSpaceDescribe("replacepods", func() {
 		framework.ExpectEqual(len(list.Items), 1)
 
 		// wait until a pod has started
-		err = wait.Poll(time.Second, time.Minute*3, func() (done bool, err error) {
+		err = wait.PollUntilContextTimeout(context.TODO(), time.Second, time.Minute*3, false, func(_ context.Context) (done bool, err error) {
 			pods, err = kubeClient.RawClient().CoreV1().Pods(ns).List(context.TODO(), metav1.ListOptions{LabelSelector: selector.ReplacedLabel})
 			if err != nil {
 				return false, err
@@ -179,7 +180,7 @@ var _ = DevSpaceDescribe("replacepods", func() {
 		framework.ExpectNoError(err)
 
 		// wait until all pods are killed
-		err = wait.Poll(time.Second, time.Minute*3, func() (done bool, err error) {
+		err = wait.PollUntilContextTimeout(context.TODO(), time.Second, time.Minute*3, false, func(_ context.Context) (done bool, err error) {
 			pods, err = kubeClient.RawClient().CoreV1().Pods(ns).List(context.TODO(), metav1.ListOptions{LabelSelector: selector.ReplacedLabel})
 			if err != nil {
 				return false, err
@@ -222,7 +223,7 @@ var _ = DevSpaceDescribe("replacepods", func() {
 
 		// wait until a pod has started
 		var pods *corev1.PodList
-		err = wait.Poll(time.Second, time.Minute, func() (done bool, err error) {
+		err = wait.PollUntilContextTimeout(context.TODO(), time.Second, time.Minute, false, func(_ context.Context) (done bool, err error) {
 			pods, err = kubeClient.RawClient().CoreV1().Pods(ns).List(context.TODO(), metav1.ListOptions{LabelSelector: selector.ReplacedLabel})
 			if err != nil {
 				return false, err
@@ -258,7 +259,7 @@ var _ = DevSpaceDescribe("replacepods", func() {
 		framework.ExpectEqual(len(list.Items), 1)
 
 		// wait until a pod has started
-		err = wait.Poll(time.Second, time.Minute, func() (done bool, err error) {
+		err = wait.PollUntilContextTimeout(context.TODO(), time.Second, time.Minute, false, func(_ context.Context) (done bool, err error) {
 			pods, err = kubeClient.RawClient().CoreV1().Pods(ns).List(context.TODO(), metav1.ListOptions{LabelSelector: selector.ReplacedLabel})
 			if err != nil {
 				return false, err
@@ -312,7 +313,7 @@ var _ = DevSpaceDescribe("replacepods", func() {
 		framework.ExpectNoError(err)
 
 		// wait until all pods are killed
-		err = wait.Poll(time.Second, time.Minute, func() (done bool, err error) {
+		err = wait.PollUntilContextTimeout(context.TODO(), time.Second, time.Minute, false, func(_ context.Context) (done bool, err error) {
 			pods, err = kubeClient.RawClient().CoreV1().Pods(ns).List(context.TODO(), metav1.ListOptions{LabelSelector: selector.ReplacedLabel})
 			if err != nil {
 				return false, err
