@@ -218,9 +218,6 @@ func (cmd *InitCmd) initDevspace(f factory.Factory, configLoader loader.ConfigLo
 	if config == nil {
 		// Create config
 		config = latest.New().(*latest.Config)
-		if err != nil {
-			return err
-		}
 	}
 
 	// Create ConfigureManager
@@ -547,7 +544,7 @@ create_deployments --all                          # 4. Deploy Helm charts and ma
 	return nil
 }
 
-func (cmd *InitCmd) initDockerCompose(f factory.Factory, composePath string) error {
+func (cmd *InitCmd) initDockerCompose(_ factory.Factory, composePath string) error {
 	project, err := compose.LoadDockerComposeProject(composePath)
 	if err != nil {
 		return err
