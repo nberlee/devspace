@@ -31,16 +31,16 @@ func (r *LocalRegistry) ensureDeployment(ctx devspacecontext.Context) (*appsv1.D
 	var existing *appsv1.Deployment
 	desired := r.getDeployment()
 	kubeClient := ctx.KubeClient()
-	err = wait.PollUntilContextTimeout(ctx.Context(), time.Second, 30*time.Second, true, func(ctx context.Context) (bool, error) {
+	err = wait.PollUntilContextTimeout(ctx.Context(), time.Second, 30*time.Second, false, func(_ context.Context) (bool, error) {
 		var err error
 
-		existing, err = kubeClient.KubeClient().AppsV1().Deployments(r.Namespace).Get(ctx, r.Name, metav1.GetOptions{})
+		existing, err = kubeClient.KubeClient().AppsV1().Deployments(r.Namespace).Get(context.TODO(), r.Name, metav1.GetOptions{})
 		if err == nil {
 			return true, nil
 		}
 
 		if kerrors.IsNotFound(err) {
-			existing, err = kubeClient.KubeClient().AppsV1().Deployments(r.Namespace).Create(ctx, desired, metav1.CreateOptions{})
+			existing, err = kubeClient.KubeClient().AppsV1().Deployments(r.Namespace).Create(context.TODO(), desired, metav1.CreateOptions{})
 			if err == nil {
 				return true, nil
 			}

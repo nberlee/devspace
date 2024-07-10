@@ -66,8 +66,8 @@ var _ = DevSpaceDescribe("devspacehelper", func() {
 
 		// wait until nginx pod is reachable
 		var pods *corev1.PodList
-		err = wait.PollUntilContextTimeout(context.TODO(), time.Second, time.Minute, false, func(ctx context.Context) (done bool, err error) {
-			pods, err = kubeClient.RawClient().CoreV1().Pods(ns).List(ctx, metav1.ListOptions{LabelSelector: "app=curl-container"})
+		err = wait.PollUntilContextTimeout(context.TODO(), time.Second, time.Minute, false, func(_ context.Context) (done bool, err error) {
+			pods, err = kubeClient.RawClient().CoreV1().Pods(ns).List(context.TODO(), metav1.ListOptions{LabelSelector: "app=curl-container"})
 			if err != nil {
 				return false, err
 			} else if len(pods.Items) == 0 || len(pods.Items[0].Status.ContainerStatuses) == 0 {
@@ -117,8 +117,8 @@ var _ = DevSpaceDescribe("devspacehelper", func() {
 
 		// wait until nginx pod is reachable
 		var pods *corev1.PodList
-		err = wait.PollUntilContextTimeout(context.TODO(), time.Second, time.Minute, false, func(ctx context.Context) (done bool, err error) {
-			pods, err = kubeClient.RawClient().CoreV1().Pods(ns).List(ctx, metav1.ListOptions{LabelSelector: "app=non-curl-container"})
+		err = wait.PollUntilContextTimeout(context.TODO(), time.Second, time.Minute, false, func(_ context.Context) (done bool, err error) {
+			pods, err = kubeClient.RawClient().CoreV1().Pods(ns).List(context.TODO(), metav1.ListOptions{LabelSelector: "app=non-curl-container"})
 			if err != nil {
 				return false, err
 			}

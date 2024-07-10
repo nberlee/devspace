@@ -143,8 +143,8 @@ sleep 1000000
 		framework.ExpectNoError(err)
 
 		// wait until pod is terminated
-		err = wait.PollUntilContextTimeout(context.TODO(), time.Second, time.Minute*3, true, func(ctx context.Context) (done bool, err error) {
-			_, err = kubeClient.RawClient().CoreV1().Pods(ns).Get(ctx, podName, metav1.GetOptions{})
+		err = wait.PollUntilContextTimeout(context.TODO(), time.Second, time.Minute*3, true, func(_ context.Context) (done bool, err error) {
+			_, err = kubeClient.RawClient().CoreV1().Pods(ns).Get(context.TODO(), podName, metav1.GetOptions{})
 			if err != nil {
 				if kerrors.IsNotFound(err) {
 					return true, nil

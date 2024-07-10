@@ -66,8 +66,8 @@ func ExpectNamespace(namespace string) {
 	kubeClient, err := kube.NewKubeHelper()
 	ExpectNoErrorWithOffset(1, err)
 
-	err = wait.PollUntilContextTimeout(context.TODO(), time.Second, time.Minute*2, true, func(ctx context.Context) (done bool, err error) {
-		ns, err := kubeClient.Client().KubeClient().CoreV1().Namespaces().Get(ctx, namespace, metav1.GetOptions{})
+	err = wait.PollUntilContextTimeout(context.TODO(), time.Second, time.Minute*2, true, func(_ context.Context) (done bool, err error) {
+		ns, err := kubeClient.Client().KubeClient().CoreV1().Namespaces().Get(context.TODO(), namespace, metav1.GetOptions{})
 		if err != nil {
 			return false, nil
 		}
