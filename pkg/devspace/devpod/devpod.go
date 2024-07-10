@@ -147,9 +147,9 @@ func (d *devPod) startWithRetry(ctx devspacecontext.Context, devPodConfig *lates
 		// check if we need to restart
 		if selectedPod != nil {
 			shouldRestart := false
-			err := wait.PollUntilContextCancel(context.TODO(), time.Second, true, func(context.Context) (bool, error) {
-				pod, err := ctx.KubeClient().KubeClient().CoreV1().Pods(selectedPod.Pod.Namespace).Get(ctx.Context(), selectedPod.Pod.Name, metav1.GetOptions{})
-				if err != nil {
+			err := wait.PollUntilContextCancel(context.TODO(), time.Second, true, func(ctxPullUntil context.Context) (bool, error) {
+				pod, err := ctx.KubeClient().KubeClient().CoreV1().Pods(selectedPod.Pod.Namespace).Get(ctxPullUntil, selectedPod.Pod.Name, metav1.GetOptions{})
+				if err != nil && err != context.Canceled {
 					if kerrors.IsNotFound(err) {
 						ctx.Log().Debugf("Restart dev %s because pod isn't found anymore", devPodConfig.Name)
 						shouldRestart = true
